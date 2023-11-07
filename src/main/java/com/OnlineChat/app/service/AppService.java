@@ -29,23 +29,24 @@ public class AppService {
     }
 
     public void match(){
+        User user1 = null;
+        User user2 = null;
         try {
-            User user1 = userMap.values().stream()
+             user1 = userMap.values().stream()
                     .filter(e -> e.getChatType().equals(ChatType.WAITING)).findFirst().get();
             user1.setChatType(ChatType.INCHAT);
-            User user2 = userMap.values().stream()
+             user2 = userMap.values().stream()
                     .filter(e -> e.getChatType().equals(ChatType.WAITING)).findFirst().get();
             user2.setChatType(ChatType.INCHAT);
-
-
+        }catch (NoSuchElementException ex){
+            user1.setChatType(ChatType.WAITING);
+            user2.setChatType(ChatType.WAITING);
+            throw new RuntimeException("No users to match");
+        }
         Group group = new Group(user1,user2,new ArrayList<>(),UUID.randomUUID().toString());
         userGroup.put(group.getGroupid(),group);
         user1.setGroupId(group.getGroupid());
         user2.setGroupId(group.getGroupid());
-        }catch (NoSuchElementException ex){
-            throw new RuntimeException("No users to match");
-
-        }
 
 
     }
@@ -62,7 +63,7 @@ public class AppService {
             throw new RuntimeException("user not matched");
         }
         Group group = userGroup.get(groupId);
-        group.getMessages().add(message);
+        group.getMessages().add(user.getName()+": "+message);
 
     }
 
